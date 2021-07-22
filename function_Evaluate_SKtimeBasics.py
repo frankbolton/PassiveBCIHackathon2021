@@ -27,6 +27,7 @@ ch_slice = ['F7', 'F5', 'F3', 'F1', 'F2', 'F4', 'F6', 'AF3', 'AFz', 'AF4','FP1',
 
 def runModel(n_estimators):
     run = neptune.init(project='frankbolton/PassiveBCIHackathon2021', source_files=[__file__, argv[0], 'environment.yaml'])
+    # run = neptune.init(project='frankbolton/helloworld', source_files=[__file__, argv[0], 'environment.yaml'])
 
     data_params =   {'n_estimators': n_estimators,
                     }
@@ -41,6 +42,7 @@ def runModel(n_estimators):
     accuracies = list()
     # for sub_n, session_n in itertools.product(range(n_subs), range(n_sessions)):
     for sub_n in range(n_subs):
+        run['subject'].log(sub_n)
         session_n = 0
         epochs_data = []
         labels = []
