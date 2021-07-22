@@ -1,4 +1,4 @@
-name: NeuroHackathon
+name: PassiveBCIHackathon2021
 channels:
     - defaults
     - conda-forge
@@ -16,6 +16,8 @@ dependencies:
     # - catboost
     # - xgboost
     - notebook
+    - pip
     - pip:
         - pyriemann
         - mne
+        - sktime
