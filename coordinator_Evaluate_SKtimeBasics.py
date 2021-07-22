@@ -7,6 +7,7 @@ B = [True,False]
 i=0
 
 for a in A:
-    print(f"{i}: {a} {b}")
-    print(function_Evaluate_SKtimeBasics.runModel(a,b))
-    i=i+1
+    for b in B:
+        print(f"{i}: {a} {b}")
+        print(function_Evaluate_SKtimeBasics.runModel(a,b))
+        i=i+1
