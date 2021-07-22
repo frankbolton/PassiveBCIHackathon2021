@@ -18,6 +18,7 @@ dependencies:
     - notebook
     - pip
     - pip:
-        - pyriemann
+        # - pyriemann
         - mne
         - sktime
+        - tsfresh

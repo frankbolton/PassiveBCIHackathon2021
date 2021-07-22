@@ -1,8 +1,9 @@
 import neptune.new as neptune
 import numpy as np
-from sklearn.model_selection import train_test_split
-from sklearn.pipeline import Pipeline
-
+# from sklearn.model_selection import train_test_split
+# from sklearn.pipeline import Pipeline
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.pipeline import make_pipeline
 
 import os
 import mne
@@ -12,11 +13,12 @@ from sys import argv
 
 # from sktime.classification.compose import ColumnEnsembleClassifier
 # from sktime.classification.dictionary_based import BOSSEnsemble
-from sktime.classification.interval_based import TimeSeriesForestClassifier
+# from sktime.classification.interval_based import TimeSeriesForestClassifier
 # from sktime.classification.shapelet_based import MrSEQLClassifier
 # from sktime.datasets import load_basic_motions
 from sktime.transformations.panel.compose import ColumnConcatenator
 from sklearn.utils import shuffle
+from sktime.transformations.panel.tsfresh import TSFreshFeatureExtractor
 
 data_path = 'C:\\Users\\frank\\code\\NeuroErgonomics_Hackathon_2021'
 n_subs = 15
@@ -37,7 +39,7 @@ def runModel(n_estimators):
 
     run['data_params'] = data_params
     run['params'] = params
-    run["sys/tags"].add(['sktime', 'loop1'])
+    run["sys/tags"].add(['sktime', 'loop3', 'tsfresh', 'randomforest'])
 
     accuracies = list()
     # for sub_n, session_n in itertools.product(range(n_subs), range(n_sessions)):
@@ -126,11 +128,15 @@ def runModel(n_estimators):
         X_test, y_test = shuffle(X_test, y_test, random_state=0)
         
     #     print(X_train.shape, y_train.shape, X_test.shape, y_test.shape)
-        steps = [
-        ("concatenate", ColumnConcatenator()),
-        ("classify", TimeSeriesForestClassifier(n_estimators=data_params['n_estimators'], random_state=0, n_jobs=-1)),
-        ]
-        clf = Pipeline(steps)
+        # steps = [
+        # ("concatenate", ColumnConcatenator()),
+        # ("classify", TimeSeriesForestClassifier(n_estimators=data_params['n_estimators'], random_state=0, n_jobs=-1)),
+        # ]
+        # clf = Pipeline(steps)
+
+        clf = make_pipeline(
+        ColumnConcatenator(), TSFreshFeatureExtractor(n_jobs=-1, show_warnings=False), RandomForestClassifier(n_estimators=data_params['n_estimators'], random_state=0, n_jobs=-1)
+        )
 
         clf.fit(X_train, y_train)
         acc = clf.score(X_test, y_test)
