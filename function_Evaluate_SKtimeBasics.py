@@ -1,7 +1,7 @@
 import neptune.new as neptune
 import numpy as np
 # from sklearn.model_selection import train_test_split
-# from sklearn.pipeline import Pipeline
+from sklearn.pipeline import Pipeline
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.pipeline import make_pipeline
 
@@ -13,7 +13,7 @@ from sys import argv
 
 # from sktime.classification.compose import ColumnEnsembleClassifier
 # from sktime.classification.dictionary_based import BOSSEnsemble
-# from sktime.classification.interval_based import TimeSeriesForestClassifier
+from sktime.classification.interval_based import TimeSeriesForestClassifier
 # from sktime.classification.shapelet_based import MrSEQLClassifier
 # from sktime.datasets import load_basic_motions
 from sktime.transformations.panel.compose import ColumnConcatenator
@@ -27,7 +27,7 @@ diff = ['MATBeasy', 'MATBmed', 'MATBdiff']
 ch_slice = ['F7', 'F5', 'F3', 'F1', 'F2', 'F4', 'F6', 'AF3', 'AFz', 'AF4','FP1', 'FP2', 'FPz']
 
 
-def runModel(n_estimators):
+def runModel(n_estimators, narrow_feature_space):
     run = neptune.init(project='frankbolton/PassiveBCIHackathon2021', source_files=[__file__, argv[0], 'environment.yaml'])
     # run = neptune.init(project='frankbolton/helloworld', source_files=[__file__, argv[0], 'environment.yaml'])
 
@@ -56,7 +56,8 @@ def runModel(n_estimators):
             epochs = mne.io.read_epochs_eeglab(path, verbose=False)
             # You could add some pre-processing here with MNE
             # We will just select some channels (mostly frontal ones)
-            epochs = epochs.drop_channels(list(set(epochs.ch_names) -set(ch_slice)))
+            if (narrow_feature_space):
+                epochs = epochs.drop_channels(list(set(epochs.ch_names) -set(ch_slice)))
 
             # Get the data and concatenante with others MATB levels
             tmp = epochs.get_data()
@@ -135,7 +136,7 @@ def runModel(n_estimators):
         # clf = Pipeline(steps)
 
         clf = make_pipeline(
-        ColumnConcatenator(), TSFreshFeatureExtractor(n_jobs=-1, show_warnings=False), RandomForestClassifier(n_estimators=data_params['n_estimators'], random_state=0, n_jobs=-1)
+        ColumnConcatenator(), TSFreshFeatureExtractor(n_jobs=0, show_warnings=False), RandomForestClassifier(random_state=0)
         )
 
         clf.fit(X_train, y_train)
