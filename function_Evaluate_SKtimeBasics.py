@@ -32,6 +32,7 @@ def runModel(n_estimators, narrow_feature_space):
     # run = neptune.init(project='frankbolton/helloworld', source_files=[__file__, argv[0], 'environment.yaml'])
 
     data_params =   {'n_estimators': n_estimators,
+                    'narrow_feature_space': narrow_feature_space,
                     }
 
     params =        {'verbose':1,
@@ -96,7 +97,8 @@ def runModel(n_estimators, narrow_feature_space):
             epochs = mne.io.read_epochs_eeglab(path, verbose=False)
             # You could add some pre-processing here with MNE
             # We will just select some channels (mostly frontal ones)
-            epochs = epochs.drop_channels(list(set(epochs.ch_names) -set(ch_slice)))
+            if (narrow_feature_space):
+                epochs = epochs.drop_channels(list(set(epochs.ch_names) -set(ch_slice)))
 
             # Get the data and concatenante with others MATB levels
             tmp = epochs.get_data()
